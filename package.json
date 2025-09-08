@@ -1,0 +1,74 @@
+{
+  "name": "@platformatic/promotel",
+  "version": "0.1.0",
+  "description": "Convert Prometheus metrics to OpenTelemetry (OTLP) format",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./server": {
+      "import": {
+        "types": "./dist/esm/server.d.ts",
+        "default": "./dist/esm/server.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/server.d.ts",
+        "default": "./dist/commonjs/server.js"
+      }
+    }
+  },
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
+  "bin": {
+    "promotel-server": "./dist/commonjs/server.js"
+  },
+  "scripts": {
+    "build": "tshy && cp -r proto dist/",
+    "test": "scripts/test-env.sh start && tsx --test test/*.test.ts; scripts/test-env.sh stop",
+    "generate:proto-types": "scripts/generate-proto-types.sh",
+    "lint": "oxlint src test",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run generate:proto-types && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "oxlint": "^1.14.0",
+    "protobufjs-cli": "^1.1.3",
+    "tshy": "^3.0.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "long": "^5.3.2",
+    "prom-client": "^15.1.3",
+    "protobufjs": "^7.4.0",
+    "undici": "^6.19.8"
+  },
+  "keywords": [
+    "prometheus",
+    "opentelemetry",
+    "otlp",
+    "metrics",
+    "conversion"
+  ],
+  "author": "Platformatic Inc. <oss@platformatic.dev> (https://platformatic.dev)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "tshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./server": "./src/server.ts"
+    }
+  }
+}
