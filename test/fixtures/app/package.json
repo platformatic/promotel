@@ -1,0 +1,9 @@
+{
+  "name": "promotel-test-app",
+  "version": "1.0.0",
+  "description": "Test app for ProMOTel integration tests",
+  "main": "server.js",
+  "dependencies": {
+    "prom-client": "^15.1.3"
+  }
+}

@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-ci
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate protobuf types
+        run: npm run generate:proto-types
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run typecheck
+
+  test:
+    name: Test (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        node-version: [18, 20, 22, 24]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate protobuf types
+        run: npm run generate:proto-types
+
+      - name: Build project
+        run: npm run build
+
+      - name: Run all tests
+        run: npm test
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          echo "=== Docker Containers ==="
+          docker ps -a
+          echo "=== Test App Logs ==="
+          docker logs promotel-test-test-app-1 || true
+          echo "=== OTEL Collector Logs ==="
+          docker logs promotel-test-otel-collector-1 || true
+          echo "=== Prometheus Logs ==="
+          docker logs promotel-test-prometheus-1 || true
