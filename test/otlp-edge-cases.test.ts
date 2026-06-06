@@ -5,8 +5,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import Long from 'long';
-import { convert, type ConversionOptions } from '../src/otlp.js';
-import { createWriteRequest, createTimeSeries, createSample, createLabel, createMetricMetadata, MetricType } from '../src/prometheus-proto.js';
+import { convert, type ConversionOptions } from '../src/otlp.ts';
+import { createWriteRequest, createTimeSeries, createSample, createLabel, createMetricMetadata, MetricType } from '../src/prometheus-proto.ts';
 import type { prometheus } from '../proto/protobuf.js';
 
 describe('OTLP Conversion Edge Cases', () => {

@@ -4,9 +4,11 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { MetricsPipeline, type MetricsSource } from '../src/pipeline.js';
+import { setTimeout as sleep } from 'node:timers/promises';
+import { MetricsPipeline, type MetricsSource } from '../src/pipeline.ts';
 import type { prometheus } from '../proto/protobuf.js';
-import { createWriteRequest, createTimeSeries, createSample, createLabel } from '../src/prometheus-proto.js';
+import { createWriteRequest, createTimeSeries, createSample, createLabel } from '../src/prometheus-proto.ts';
+import { createMockOTLPEndpoint } from './test-utils.ts';
 
 // Mock metrics source for testing
 class MockMetricsSource implements MetricsSource {
@@ -90,42 +92,51 @@ describe('MetricsPipeline', () => {
 
   describe('Lifecycle Management', () => {
     
-    it('should handle start/stop lifecycle correctly', () => {
+    it('should handle start/stop lifecycle correctly', async () => {
       const source = new MockMetricsSource();
+      const mockEndpoint = await createMockOTLPEndpoint();
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post',
+        otlpEndpoint: mockEndpoint.url,
         interval: 300000 // Long interval to avoid automatic triggers
       });
 
-      // Initially not running
-      assert.strictEqual(pipeline.running, false);
+      try {
+        // Initially not running
+        assert.strictEqual(pipeline.running, false);
 
-      // Start pipeline
-      pipeline.start();
-      assert.strictEqual(pipeline.running, true);
+        // Start pipeline
+        pipeline.start();
+        assert.strictEqual(pipeline.running, true);
 
-      // Should throw if started again
-      assert.throws(
-        () => pipeline.start(),
-        /already running/i,
-        'Should throw if started twice'
-      );
+        // Should throw if started again
+        assert.throws(
+          () => pipeline.start(),
+          /already running/i,
+          'Should throw if started twice'
+        );
 
-      // Stop pipeline
-      pipeline.stop();
-      assert.strictEqual(pipeline.running, false);
+        await sleep(50);
 
-      // Should be safe to stop again
-      pipeline.stop(); // Should not throw
-      assert.strictEqual(pipeline.running, false);
+        // Stop pipeline
+        pipeline.stop();
+        assert.strictEqual(pipeline.running, false);
+
+        // Should be safe to stop again
+        pipeline.stop(); // Should not throw
+        assert.strictEqual(pipeline.running, false);
+        assert.ok(mockEndpoint.requests.length > 0, 'Should push at least one payload when started');
+      } finally {
+        pipeline.stop();
+        await mockEndpoint.close();
+      }
     });
 
     it('should stop pipeline even if not started', () => {
       const source = new MockMetricsSource();
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post'
+        otlpEndpoint: 'http://127.0.0.1:4318/v1/metrics'
       });
 
       // Should be safe to stop when not running
@@ -139,26 +150,32 @@ describe('MetricsPipeline', () => {
     
     it('should perform manual collect and push successfully', async () => {
       const source = new MockMetricsSource();
+      const mockEndpoint = await createMockOTLPEndpoint();
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post', // Use httpbin for reliable testing
+        otlpEndpoint: mockEndpoint.url,
         conversionOptions: {
           serviceName: 'pipeline-test'
         }
       });
 
-      // Manual collection should work
-      await pipeline.collectAndPush();
-      
-      // Should still not be running (manual collection doesn't start interval)
-      assert.strictEqual(pipeline.running, false);
+      try {
+        // Manual collection should work
+        await pipeline.collectAndPush();
+
+        // Should still not be running (manual collection doesn't start interval)
+        assert.strictEqual(pipeline.running, false);
+        assert.strictEqual(mockEndpoint.requests.length, 1, 'Should push one payload');
+      } finally {
+        await mockEndpoint.close();
+      }
     });
 
     it('should handle source fetch errors', async () => {
       const source = new MockMetricsSource(true); // Will throw on fetch
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post'
+        otlpEndpoint: 'http://127.0.0.1:4318/v1/metrics'
       });
 
       await assert.rejects(
@@ -217,7 +234,7 @@ describe('MetricsPipeline', () => {
       const source = new MockMetricsSource(true); // Will throw on fetch
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post'
+        otlpEndpoint: 'http://127.0.0.1:4318/v1/metrics'
         // No onError handler
       });
 
@@ -258,30 +275,42 @@ describe('MetricsPipeline', () => {
       });
 
       const source = new MockMetricsSource(false, testData);
+      const mockEndpoint = await createMockOTLPEndpoint();
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post',
+        otlpEndpoint: mockEndpoint.url,
         conversionOptions: {
           serviceName: 'data-flow-test',
           serviceVersion: '2.0.0'
         }
       });
 
-      // Should successfully collect and convert the data
-      await pipeline.collectAndPush();
+      try {
+        // Should successfully collect and convert the data
+        await pipeline.collectAndPush();
+        assert.strictEqual(mockEndpoint.requests.length, 1, 'Should send one OTLP request');
+      } finally {
+        await mockEndpoint.close();
+      }
     });
 
     it('should handle empty metrics gracefully', async () => {
       const emptyData = createWriteRequest({ timeseries: [], metadata: [] });
       const source = new MockMetricsSource(false, emptyData);
-      
+      const mockEndpoint = await createMockOTLPEndpoint();
+
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post'
+        otlpEndpoint: mockEndpoint.url
       });
 
-      // Should handle empty data without errors
-      await pipeline.collectAndPush();
+      try {
+        // Should handle empty data without errors
+        await pipeline.collectAndPush();
+        assert.strictEqual(mockEndpoint.requests.length, 1, 'Should still send one OTLP request');
+      } finally {
+        await mockEndpoint.close();
+      }
     });
     
   });
@@ -308,16 +337,22 @@ describe('MetricsPipeline', () => {
       }
 
       const source = new CustomSource();
+      const mockEndpoint = await createMockOTLPEndpoint();
       const pipeline = new MetricsPipeline({
         source,
-        otlpEndpoint: 'http://httpbin.org/post',
+        otlpEndpoint: mockEndpoint.url,
         conversionOptions: {
           serviceName: 'custom-source-test'
         }
       });
 
-      // Should work with any source that implements the interface
-      await pipeline.collectAndPush();
+      try {
+        // Should work with any source that implements the interface
+        await pipeline.collectAndPush();
+        assert.strictEqual(mockEndpoint.requests.length, 1, 'Should send one OTLP request');
+      } finally {
+        await mockEndpoint.close();
+      }
     });
     
   });

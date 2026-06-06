@@ -9,13 +9,13 @@ import {
   encode,
   parse,
   convert,
-  ConversionOptions,
   PrometheusParseError,
   OTLPConversionError,
   prometheus,
   opentelemetry
-} from '../src/index.js';
-import { createWriteRequest, createTimeSeries, createSample, createLabel } from '../src/prometheus-proto.js';
+} from '../src/index.ts';
+import type { ConversionOptions } from '../src/index.ts';
+import { createWriteRequest, createTimeSeries, createSample, createLabel } from '../src/prometheus-proto.ts';
 
 describe('Index Exports', () => {
   

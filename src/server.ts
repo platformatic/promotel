@@ -9,8 +9,8 @@
 
 import { parseArgs } from 'node:util';
 import type { prometheus } from '../proto/protobuf.js';
-import { MetricsPipeline, type MetricsSource } from './pipeline.js';
-import { gather, type PrometheusEndpointOptions } from './http-client.js';
+import { MetricsPipeline, type MetricsSource } from './pipeline.ts';
+import { gather, type PrometheusEndpointOptions } from './http-client.ts';
 
 /**
  * Metrics source that fetches from an HTTP endpoint

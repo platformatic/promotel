@@ -4,7 +4,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { parse } from '../src/parser.js';
+import { parse } from '../src/parser.ts';
 
 describe('Prometheus Parser', () => {
   

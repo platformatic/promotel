@@ -4,7 +4,9 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { PromClientBridge } from '../src/bridge.js';
+import { setTimeout as sleep } from 'node:timers/promises';
+import { PromClientBridge } from '../src/bridge.ts';
+import { createMockOTLPEndpoint } from './test-utils.ts';
 
 describe('PromClientBridge', () => {
   
@@ -41,6 +43,7 @@ describe('PromClientBridge', () => {
     it('should perform manual collect and push', async () => {
       // Dynamically import prom-client to avoid hard dependency
       const { register, Counter } = await import('prom-client');
+      const mockEndpoint = await createMockOTLPEndpoint();
       
       // Clear registry and create a test metric
       register.clear();
@@ -52,20 +55,24 @@ describe('PromClientBridge', () => {
       
       const bridge = new PromClientBridge({
         registry: register,
-        otlpEndpoint: 'http://httpbin.org/post', // Use httpbin for testing 
+        otlpEndpoint: mockEndpoint.url,
         interval: 60000 // Long interval, we'll trigger manually
       });
       
-      // Manual collection should work
-      await bridge.collectAndPush();
-      
-      // Clean up
-      register.clear();
+      try {
+        // Manual collection should work
+        await bridge.collectAndPush();
+        assert.strictEqual(mockEndpoint.requests.length, 1, 'Should push one payload');
+      } finally {
+        register.clear();
+        await mockEndpoint.close();
+      }
     });
     
     it('should handle start/stop lifecycle', async () => {
       // Dynamically import prom-client to avoid hard dependency
       const { register, Counter } = await import('prom-client');
+      const mockEndpoint = await createMockOTLPEndpoint();
       
       // Clear registry and create a test metric
       register.clear();
@@ -77,30 +84,36 @@ describe('PromClientBridge', () => {
       
       const bridge = new PromClientBridge({
         registry: register,
-        otlpEndpoint: 'http://httpbin.org/post', // Use httpbin for testing
+        otlpEndpoint: mockEndpoint.url,
         interval: 30000 // Long enough that it won't trigger during test
       });
       
-      // Start bridge
-      bridge.start();
-      assert.strictEqual(bridge.running, true, 'Should be running after start');
-      
-      // Should throw if started again
-      assert.throws(
-        () => bridge.start(),
-        /already running/i,
-        'Should throw if started twice'
-      );
-      
-      // Stop bridge
-      bridge.stop();
-      assert.strictEqual(bridge.running, false, 'Should not be running after stop');
-      
-      // Should be safe to stop again
-      bridge.stop(); // Should not throw
-      
-      // Clean up
-      register.clear();
+      try {
+        // Start bridge
+        bridge.start();
+        assert.strictEqual(bridge.running, true, 'Should be running after start');
+        
+        // Should throw if started again
+        assert.throws(
+          () => bridge.start(),
+          /already running/i,
+          'Should throw if started twice'
+        );
+
+        await sleep(50);
+        
+        // Stop bridge
+        bridge.stop();
+        assert.strictEqual(bridge.running, false, 'Should not be running after stop');
+        
+        // Should be safe to stop again
+        bridge.stop(); // Should not throw
+        assert.ok(mockEndpoint.requests.length > 0, 'Should push at least one payload when started');
+      } finally {
+        bridge.stop();
+        register.clear();
+        await mockEndpoint.close();
+      }
     });
     
     it('should handle errors gracefully', async () => {

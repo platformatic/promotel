@@ -3,12 +3,12 @@
  */
 
 import { request } from 'undici';
-import { OTLPConversionError } from './errors.js';
+import { OTLPConversionError } from './errors.ts';
 import protobuf from '../proto/protobuf.js';
 import type { prometheus, opentelemetry } from '../proto/protobuf.js';
 
 const { opentelemetry: otlpProto } = protobuf;
-import { decodeWriteRequest } from './prometheus-proto.js';
+import { decodeWriteRequest } from './prometheus-proto.ts';
 
 export interface PrometheusEndpointOptions {
   url: string;
@@ -59,7 +59,7 @@ export async function gather(options: PrometheusEndpointOptions): Promise<promet
     // Handle text formats - parse to protobuf WriteRequest
     if (contentType.includes('text/plain') || contentType.includes('text/')) {
       const textData = await response.body.text();
-      const { parse } = await import('./parser.js');
+      const { parse } = await import('./parser.ts');
       return parse(textData);
     }
 

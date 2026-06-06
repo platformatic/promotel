@@ -7,8 +7,8 @@ import assert from 'node:assert';
 import {
   gather,
   dispatch,
-} from '../src/http-client.js';
-import { convert } from '../src/index.js';
+} from '../src/http-client.ts';
+import { convert } from '../src/index.ts';
 
 describe('gather', () => {
   it('should fetch metrics from test app endpoint', async () => {

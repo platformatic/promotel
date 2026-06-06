@@ -6,10 +6,10 @@
  */
 
 import type { prometheus } from '../proto/protobuf.js';
-import { convert } from './otlp.js';
-import { dispatch, type OTLPEndpointOptions } from './http-client.js';
-import { OTLPConversionError } from './errors.js';
-import type { ConversionOptions } from './otlp.js';
+import { convert } from './otlp.ts';
+import { dispatch, type OTLPEndpointOptions } from './http-client.ts';
+import { OTLPConversionError } from './errors.ts';
+import type { ConversionOptions } from './otlp.ts';
 
 /**
  * Interface for different metrics data sources

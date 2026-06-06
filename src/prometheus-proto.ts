@@ -37,7 +37,7 @@ export function createTimeSeries(data: {
  * Create Prometheus MetricMetadata object
  */
 export function createMetricMetadata(data: {
-  type: number; // MetricType enum value
+  type: MetricType;
   metric_family_name: string;
   help?: string;
   unit?: string;
@@ -65,18 +65,20 @@ export function createSample(value: number, timestamp: number): prometheus.ISamp
 }
 
 /**
- * Prometheus MetricType enum values
+ * Prometheus MetricType values
  */
-export enum MetricType {
-  UNKNOWN = 0,
-  COUNTER = 1,
-  GAUGE = 2,
-  HISTOGRAM = 3,
-  GAUGEHISTOGRAM = 4,
-  SUMMARY = 5,
-  INFO = 6,
-  STATESET = 7
-}
+export const MetricType = {
+  UNKNOWN: 0,
+  COUNTER: 1,
+  GAUGE: 2,
+  HISTOGRAM: 3,
+  GAUGEHISTOGRAM: 4,
+  SUMMARY: 5,
+  INFO: 6,
+  STATESET: 7
+} as const;
+
+export type MetricType = (typeof MetricType)[keyof typeof MetricType];
 
 
 /**

@@ -4,7 +4,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { PrometheusParseError, OTLPConversionError } from '../src/errors.js';
+import { PrometheusParseError, OTLPConversionError } from '../src/errors.ts';
 
 describe('Error Classes', () => {
   

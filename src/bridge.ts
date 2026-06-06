@@ -4,10 +4,10 @@
 
 import type { Registry } from 'prom-client';
 import type { prometheus } from '../proto/protobuf.js';
-import { MetricsPipeline, type MetricsSource } from './pipeline.js';
-import { getFromRegistry } from './prom-client.js';
-import type { OTLPEndpointOptions } from './http-client.js';
-import type { ConversionOptions } from './otlp.js';
+import { MetricsPipeline, type MetricsSource } from './pipeline.ts';
+import { getFromRegistry } from './prom-client.ts';
+import type { OTLPEndpointOptions } from './http-client.ts';
+import type { ConversionOptions } from './otlp.ts';
 
 /**
  * Metrics source that fetches from a prom-client registry
