@@ -6,7 +6,7 @@ services:
     working_dir: /app
     volumes:
       - ./app:/app
-    command: sh -c "npm install && node server.js"
+    command: node server.js
     environment:
       - NODE_ENV=test
     healthcheck:

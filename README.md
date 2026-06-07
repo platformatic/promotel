@@ -21,7 +21,7 @@ A pure TypeScript implementation for converting Prometheus metrics to OpenTeleme
 npm install @platformatic/promotel
 ```
 
-**Requirements**: Node.js 18+
+**Requirements**: Node.js 20.18.1+
 
 ## Quick Start
 
