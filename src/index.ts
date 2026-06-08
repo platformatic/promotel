@@ -6,16 +6,16 @@
  */
 
 // Main conversion function
-export { convert } from './otlp.js';
+export { convert } from './otlp.ts';
 
 // Parser functions for advanced usage
-export { parse } from './parser.js';
+export { parse } from './parser.ts';
 
 // Prometheus protobuf functions
 export {
   decodeWriteRequest,
   MetricType
-} from './prometheus-proto.js';
+} from './prometheus-proto.ts';
 
 // Generated protobuf types and encoding functions
 import protobuf from '../proto/protobuf.js';
@@ -31,12 +31,12 @@ export function encode(data: opentelemetry.proto.collector.metrics.v1.IExportMet
 // Type definitions and error classes
 export {
   type ConversionOptions,
-} from './otlp.js';
+} from './otlp.ts';
 
 export {
   PrometheusParseError,
   OTLPConversionError,
-} from './errors.js';
+} from './errors.ts';
 
 // HTTP client functions
 export {
@@ -44,23 +44,23 @@ export {
   dispatch,
   type PrometheusEndpointOptions,
   type OTLPEndpointOptions,
-} from './http-client.js';
+} from './http-client.ts';
 
 // Prom-client integration
 export {
   getFromRegistry,
   type PromClientOptions,
-} from './prom-client.js';
+} from './prom-client.ts';
 
 // Bridge class for in-process conversion
 export {
   PromClientBridge,
   type PromClientBridgeOptions,
-} from './bridge.js';
+} from './bridge.ts';
 
 // Core pipeline for unified metrics processing
 export {
   MetricsPipeline,
   type MetricsSource,
   type MetricsPipelineOptions,
-} from './pipeline.js';
+} from './pipeline.ts';

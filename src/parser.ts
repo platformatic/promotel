@@ -14,9 +14,9 @@ import {
   MetricType,
   createLabel,
   createSample
-} from './prometheus-proto.js';
+} from './prometheus-proto.ts';
 import type { prometheus } from '../proto/protobuf.js';
-import { PrometheusParseError } from './errors.js';
+import { PrometheusParseError } from './errors.ts';
 
 /**
  * Parse Prometheus text exposition format into a Prometheus protobuf WriteRequest

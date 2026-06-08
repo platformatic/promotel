@@ -7,8 +7,8 @@
 import type { Registry } from 'prom-client';
 import { register } from 'prom-client';
 import type { prometheus } from '../proto/protobuf.js';
-import { parse } from './parser.js';
-import { PrometheusParseError } from './errors.js';
+import { parse } from './parser.ts';
+import { PrometheusParseError } from './errors.ts';
 
 /**
  * Options for fetching metrics from a prom-client registry

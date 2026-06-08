@@ -8,7 +8,7 @@ import {
   convert,
   parse,
   encode
-} from '../src/index.js';
+} from '../src/index.ts';
 
 describe('OTLP Conversion', () => {
   

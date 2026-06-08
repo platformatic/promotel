@@ -12,7 +12,7 @@ import {
   convert, 
   gather,
   opentelemetry
-} from '../src/index.js';
+} from '../src/index.ts';
 
 // Test configuration with fixed ports
 const TEST_APP_URL = 'http://localhost:3000';
@@ -209,7 +209,7 @@ describe('Integration Tests', () => {
     
     it('should handle empty metrics gracefully', async () => {
       // Create empty WriteRequest directly since we're testing empty metrics
-      const { parse } = await import('../src/parser.js');
+      const { parse } = await import('../src/parser.ts');
       const emptyMetrics = '# Empty metrics file\n';
       const emptyWriteRequest = await parse(emptyMetrics);
       const otlpData = await convert(emptyWriteRequest);
@@ -243,7 +243,7 @@ another_invalid_line =
 another_test_metric{label="value"} 123
 `;
       
-      const { parse } = await import('../src/parser.js');
+      const { parse } = await import('../src/parser.ts');
       const malformedWriteRequest = await parse(malformedMetrics);
       const otlpData = await convert(malformedWriteRequest);
       // OTLP data is already validated by TypeScript types at compile-time

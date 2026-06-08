@@ -12,7 +12,7 @@ import {
   createSample,
   MetricType,
   decodeWriteRequest
-} from '../src/prometheus-proto.js';
+} from '../src/prometheus-proto.ts';
 
 describe('Prometheus Protobuf Utilities', () => {
   
@@ -118,9 +118,9 @@ describe('Prometheus Protobuf Utilities', () => {
     
   });
   
-  describe('MetricType Enum', () => {
+  describe('MetricType values', () => {
     
-    it('should have correct enum values', () => {
+    it('should have correct values', () => {
       assert.strictEqual(MetricType.UNKNOWN, 0);
       assert.strictEqual(MetricType.COUNTER, 1);
       assert.strictEqual(MetricType.GAUGE, 2);
@@ -132,14 +132,12 @@ describe('Prometheus Protobuf Utilities', () => {
     });
     
     it('should be usable in metadata creation', () => {
-      Object.values(MetricType).forEach(type => {
-        if (typeof type === 'number') {
-          const metadata = createMetricMetadata({
-            type,
-            metric_family_name: `test_metric_${type}`
-          });
-          assert.strictEqual(metadata.type, type, `Should create metadata with type ${type}`);
-        }
+      Object.values(MetricType).forEach((type) => {
+        const metadata = createMetricMetadata({
+          type,
+          metric_family_name: `test_metric_${type}`
+        });
+        assert.strictEqual(metadata.type, type, `Should create metadata with type ${type}`);
       });
     });
     
