@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Convert Prometheus metrics to OpenTelemetry (OTLP) format",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/platformatic/promotel.git"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
