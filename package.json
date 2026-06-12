@@ -1,6 +1,6 @@
 {
   "name": "@platformatic/promotel",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Convert Prometheus metrics to OpenTelemetry (OTLP) format",
   "type": "module",
   "repository": {
