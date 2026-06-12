@@ -61,13 +61,6 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
-# Proto files should be excluded from root
-proto/
-
-# Ignore non-.proto files in dist/proto/
-dist/proto/opentelemetry/**
-!dist/proto/**/*.proto
-
 # Source files should be excluded from published package
 src/
 

@@ -24,12 +24,14 @@
   },
   "files": [
     "dist",
+    "proto",
     "README.md"
   ],
   "scripts": {
     "clean": "rm -rf dist .tshy",
-    "build": "npm run clean && tsc -p tsconfig.build.json && cp -r proto dist/",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
     "test": "scripts/test-env.sh start && node --experimental-strip-types --test --test-concurrency=1 test/*.test.ts; scripts/test-env.sh stop",
+    "test:pack": "scripts/test-packed-package.sh",
     "generate:proto-types": "scripts/generate-proto-types.sh",
     "lint": "oxlint src test",
     "typecheck": "tsc -p tsconfig.json",
