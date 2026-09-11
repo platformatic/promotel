@@ -48,4 +48,6 @@ jobs:
         run: npm publish --provenance --access public --tag ${{ inputs.prerelease == true && 'next' || 'latest' }}
 
       - name: Create release notes
-        run: npx @matteo.collina/release-notes -a ${{ secrets.GH_RELEASE_TOKEN }} -t v${{ inputs.version }} -r promotel -o platformatic ${{ github.event.inputs.prerelease == 'true' && '-p' || '' }} -c ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npx @matteo.collina/release-notes -t v${{ inputs.version }} -r promotel -o platformatic ${{ github.event.inputs.prerelease == 'true' && '-p' || '' }} -c ${{ github.ref }}
