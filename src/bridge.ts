@@ -2,7 +2,7 @@
  * PromClientBridge - In-process conversion class for prom-client registries
  */
 
-import type { Registry } from 'prom-client';
+import type { Registry } from '@platformatic/prom-client';
 import type { prometheus } from '../proto/protobuf.js';
 import { MetricsPipeline, type MetricsSource } from './pipeline.ts';
 import { getFromRegistry } from './prom-client.ts';

@@ -14,7 +14,7 @@ describe('PromClientBridge', () => {
     
     it('should create bridge instance with proper configuration', async () => {
       // Dynamically import prom-client to avoid hard dependency
-      const { register, Counter } = await import('prom-client');
+      const { register, Counter } = await import('@platformatic/prom-client');
       
       // Create a test metric
       const testCounter = new Counter({
@@ -42,7 +42,7 @@ describe('PromClientBridge', () => {
     
     it('should perform manual collect and push', async () => {
       // Dynamically import prom-client to avoid hard dependency
-      const { register, Counter } = await import('prom-client');
+      const { register, Counter } = await import('@platformatic/prom-client');
       const mockEndpoint = await createMockOTLPEndpoint();
       
       // Clear registry and create a test metric
@@ -71,7 +71,7 @@ describe('PromClientBridge', () => {
     
     it('should handle start/stop lifecycle', async () => {
       // Dynamically import prom-client to avoid hard dependency
-      const { register, Counter } = await import('prom-client');
+      const { register, Counter } = await import('@platformatic/prom-client');
       const mockEndpoint = await createMockOTLPEndpoint();
       
       // Clear registry and create a test metric
@@ -118,7 +118,7 @@ describe('PromClientBridge', () => {
     
     it('should handle errors gracefully', async () => {
       // Dynamically import prom-client to avoid hard dependency
-      const { register } = await import('prom-client');
+      const { register } = await import('@platformatic/prom-client');
       
       let _errorCaught: Error | null = null;
       
