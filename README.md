@@ -10,7 +10,7 @@ A pure TypeScript implementation for converting Prometheus metrics to OpenTeleme
 - 🛡️ **Type Safe**: Full TypeScript support with generated protobuf types
 - 🔄 **Format Flexibility**: Prometheus content negotiation between protobuf and text formats
 - 🌐 **HTTP Integration**: Built-in HTTP client for fetching and pushing metrics
-- 🔧 **Prom-Client Integration**: Direct integration with prom-client registries
+- 🔧 **Prom-Client Integration**: Direct integration with [`@platformatic/prom-client`](https://github.com/platformatic/prom-client) registries
 - 🏗️ **Pipeline Architecture**: Flexible metrics pipeline with pluggable sources
 - ⚡ **CLI Tool**: Standalone server for automated metric conversion
 - 📊 **Complete Metric Support**: Counters, gauges, histograms, and summaries
@@ -18,10 +18,14 @@ A pure TypeScript implementation for converting Prometheus metrics to OpenTeleme
 ## Installation
 
 ```bash
-npm install @platformatic/promotel
+npm install @platformatic/promotel @platformatic/prom-client
 ```
 
 **Requirements**: Node.js 20.18.1+
+
+`@platformatic/prom-client` (`^1.0.0 || ^2.0.0`) is a peer dependency, so promotel reads the same
+registries, including the default `register`, as your application. npm and pnpm install it
+automatically if your project does not already depend on it.
 
 ## Quick Start
 
@@ -42,11 +46,11 @@ This will automatically fetch metrics from your Prometheus endpoint every 30 sec
 
 ### In-Process Bridge
 
-For Node.js applications using prom-client, use the automated bridge:
+For Node.js applications using `@platformatic/prom-client`, use the automated bridge:
 
 ```typescript
 import { PromClientBridge } from '@platformatic/promotel';
-import { register } from 'prom-client';
+import { register } from '@platformatic/prom-client';
 
 const bridge = new PromClientBridge({
   registry: register, // Your prom-client registry
@@ -166,13 +170,13 @@ await dispatch(otlpData, {
 
 #### `getFromRegistry(options?): Promise<prometheus.IWriteRequest>`
 
-Extracts metrics from a prom-client registry as protobuf WriteRequest.
+Extracts metrics from a `@platformatic/prom-client` registry as protobuf WriteRequest.
 
 **Options:**
 - `registry?: Registry` - Prom-client registry (defaults to default registry)
 
 ```typescript
-import { register, Counter } from 'prom-client';
+import { register, Counter } from '@platformatic/prom-client';
 
 const counter = new Counter({
   name: 'my_counter',

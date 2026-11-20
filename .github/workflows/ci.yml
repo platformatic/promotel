@@ -15,9 +15,12 @@ concurrency:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         node-version: [22.x, 24.x, 26.x]
-    name: Node.js ${{ matrix.node-version }}
+        # Every major in the @platformatic/prom-client peer range (Watt ships 1.x)
+        prom-client: ['1', '2']
+    name: Node.js ${{ matrix.node-version }} / prom-client ${{ matrix.prom-client }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -32,6 +35,18 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Install @platformatic/prom-client ${{ matrix.prom-client }}.x
+        run: |
+          npm install --no-save --ignore-scripts "@platformatic/prom-client@^${PROM_CLIENT_MAJOR}.0.0"
+          VERSION="$(node -p "require('@platformatic/prom-client/package.json').version")"
+          echo "Testing against @platformatic/prom-client@${VERSION}"
+          if [ "${VERSION%%.*}" != "${PROM_CLIENT_MAJOR}" ]; then
+            echo "::error::Expected @platformatic/prom-client ${PROM_CLIENT_MAJOR}.x, got ${VERSION}"
+            exit 1
+          fi
+        env:
+          PROM_CLIENT_MAJOR: ${{ matrix.prom-client }}
 
       - name: Generate protobuf types
         run: npm run generate:proto-types

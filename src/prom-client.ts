@@ -4,8 +4,8 @@
  * Converts prom-client registry metrics directly into Prometheus protobuf WriteRequest objects.
  */
 
-import type { Registry } from 'prom-client';
-import { register } from 'prom-client';
+import type { Registry } from '@platformatic/prom-client';
+import { register } from '@platformatic/prom-client';
 import type { prometheus } from '../proto/protobuf.js';
 import { parse } from './parser.ts';
 import { PrometheusParseError } from './errors.ts';
